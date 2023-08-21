@@ -1,0 +1,12 @@
+CIPio Installer v1.0
+
+Welcome to the Common Integrtion Platform Installer
+
+Default containers include the following:
+ - Node-Red
+ - InfluxDB
+ - MongoDB and Mongo Express
+ - Grafana
+ - Portainer
+ - Watchtower
+

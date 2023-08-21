@@ -1,0 +1,177 @@
+version: '3.1'
+
+services:
+
+############## NGINX
+  nginx:
+    container_name: nginx
+    image: nginx
+    restart: always
+    profiles:
+      - default
+      - nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ${CIPIOROOT}/nginx/conf.d:/etc/nginx/conf.d
+    environment:
+      NGINX_HOST: nuc8.com 
+      NGINX_PORT: 80
+      
+
+##############MONGODB
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    restart: always
+    profiles:
+      - default 
+      - mongodb
+      - mongoexpress
+    ports:
+      - "27017:27017"
+    volumes:
+      - ${CIPIOROOT}/mongo/data/db:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGOUSER:-root} 
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGOPW:-root}
+
+##############MONGODB-EXPRESS
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express
+    restart: always
+    depends_on: 
+      - mongodb
+    profiles:
+      - default
+      - mongoexpress
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGOUSER:-root}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGOPW:-root}
+      ME_CONFIG_MONGODB_SERVER: mongodb
+
+#############MQTT
+  mqtt:
+    container_name: mosquitto
+    image: eclipse-mosquitto
+    restart: always
+    profiles: 
+      - default
+      - mosquitto
+      - mqtt
+    volumes:
+      - ${CIPIOROOT}/mosquitto/data:/mosquitto/data
+      - ${CIPIOROOT}/mosquitto/log:/mosquitto/log
+      - ${CIPIOROOT}/mosquitto/config:/mosquitto/config
+    ports:
+      - "1883:1883"
+
+#############PORTAINER
+  portainer:
+    container_name: portainer
+    restart: always
+    profiles: 
+      - portainer
+      - default
+    image: portainer/portainer-ce
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+#############WATCHTOWER
+  watchtower:
+    container_name: watchtower
+    restart: always
+    profiles: 
+      - default
+      - watchtower
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --cleanup true 
+
+#############INFLUXDB
+  influxdb:
+    container_name: influxdb
+    restart: always
+    profiles: 
+      - influx
+      - influxdb
+      - default
+    image: influxdb:1.8
+    ports:
+      - "8086:8086"
+      - "2003:2003"
+    volumes:
+      - ${CIPIOROOT}/influxdb:/var/lib/influxdb
+
+#############INFLUXDB2
+  influxdb2:
+    container_name: influxdb2
+    restart: always
+    profiles: 
+      - influxdb2
+    image: influxdb:latest
+    ports:
+      - "8086:8086"
+      - "2003:2003"
+        #- ${INFLUX2PORT2}
+        #- ${INFLUX2PORT1}
+    volumes:
+      - ${CIPIOROOT}/influxdb2:/var/lib/influxdb
+
+#############GRAFANA
+  grafana:
+    container_name: grafana
+    restart: always
+    profiles: 
+      - grafana
+      - default
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_storage:/var/lib/grafana
+
+#############NODERED
+  node-red:
+    container_name: node-red
+    build: ./nr/
+    restart: always
+    profiles: 
+      - nodered
+      - nodered1
+      - default
+        #image: nodered/node-red:latest
+    ports:
+      - "1880:1880"
+      - "8834:8834"
+    volumes:
+      - ${CIPIOROOT}/node-red:/data
+
+#############NODERED-DEV
+  node-red-dev:
+    container_name: node-red-dev
+    image: nodered/node-red:latest
+    restart: always
+    profiles: 
+      - nodered-dev
+    ports:
+      - "1881:1880"
+      - "8835:8834"
+    volumes:
+      - ${CIPIOROOT}/node-red-dev:/data
+    environment:
+      DEBUG: "anl:ocpp:cp:*"
+
+#############VOLUMES
+volumes:
+  portainer_data:
+  grafana_storage:
+
+

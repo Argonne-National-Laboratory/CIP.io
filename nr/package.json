@@ -1,0 +1,24 @@
+{
+    "name": "node-red-project",
+    "description": "A Node-RED Project",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+      "start": "node $NODE_OPTIONS node_modules/node-red/red.js $FLOWS",
+      "debug": "node --inspect=0.0.0.0:9229 $NODE_OPTIONS node_modules/node-red/red.js $FLOWS",
+      "debug_brk": "node --inspect=0.0.0.0:9229 --inspect-brk $NODE_OPTIONS node_modules/node-red/red.js $FLOWS"
+    },
+    "dependencies": {
+      "node-red": ">=1.2.9",
+      "node-red-dashboard": ">=2",
+      "node-red-contrib-ocpp": ">=1",
+      "node-red-contrib-bacnet": ">= 0.2.4",
+      "node-red-contrib-modbustcp": ">=1",
+      "@anl-ioc/node-red-contrib-oadr-ven": ">=1",
+      "node-red-contrib-influxdb": ">= 0.5.4",
+      "node-red-node-mongodb": ">= 0.2.5"
+    },
+    "engines": {
+      "node": ">=10"
+    }
+}
